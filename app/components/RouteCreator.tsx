@@ -2,44 +2,53 @@
 import { createContext, useContext, useState } from "react";
 
 type Coords = [number, number];
+type Waypoint = Coords | null;
+
+export type TransportSelection = {
+  factor: number;
+  method: string;
+} | null;
+
+export interface Segment {
+  from: Coords;
+  to: Coords;
+  distance: number; // meters
+  transportMethod: string;
+  transportFactor: number; // kg per km
+  carbon: number; // kg
+  geometry: any;
+}
 
 interface RouteContextType {
-  start: Coords | null;
-  end: Coords | null;
-  route: any | null;
-  transportCO2Factor: number | null;
-  distance: number | null;
-  setStart: (c: Coords | null) => void;
-  setEnd: (c: Coords | null) => void;
-  setRoute: (r: any | null) => void;
-  settransportCO2Factor: (v: number | null) => void;
-  setDistance: (d: number | null) => void;
+  waypoints: Waypoint[];
+  transportSelections: TransportSelection[];
+  segments: Segment[];
+
+  setWaypoints: (w: Waypoint[]) => void;
+  setTransportSelections: (t: TransportSelection[]) => void;
+  setSegments: (s: Segment[]) => void;
 }
 
 const RouteContext = createContext<RouteContextType | null>(null);
 
 export function RouteProvider({ children }: { children: React.ReactNode }) {
-  const [start, setStart] = useState<Coords | null>(null);
-  const [end, setEnd] = useState<Coords | null>(null);
-  const [route, setRoute] = useState<any | null>(null);
-  const [distance, setDistance] = useState<number | null>(null);
-  const [transportCO2Factor, settransportCO2Factor] = useState<number | null>(
-    null,
-  );
+  const [waypoints, setWaypoints] = useState<Waypoint[]>([null]);
+
+  const [transportSelections, setTransportSelections] = useState<
+    TransportSelection[]
+  >([]);
+
+  const [segments, setSegments] = useState<Segment[]>([]);
 
   return (
     <RouteContext.Provider
       value={{
-        start,
-        end,
-        route,
-        transportCO2Factor,
-        distance,
-        setStart,
-        setEnd,
-        setRoute,
-        settransportCO2Factor,
-        setDistance,
+        waypoints,
+        transportSelections,
+        segments,
+        setWaypoints,
+        setTransportSelections,
+        setSegments,
       }}
     >
       {children}

@@ -1,39 +1,63 @@
 "use client";
 import { useRoute } from "./RouteCreator";
-import TransportSelect from "./TransportSelect";
 
 export default function RouteButton() {
-  const { start, end, setRoute, setDistance } = useRoute();
+  const { waypoints, transportSelections, setSegments } = useRoute();
 
   const handleRoute = async () => {
-    if (!start || !end) {
-      alert("Please select both a start and destination");
+    const validWaypoints = waypoints.filter(
+      (w): w is [number, number] => w !== null,
+    );
+
+    if (validWaypoints.length < 2) {
+      alert("Need at least 2 waypoints");
       return;
     }
 
-    try {
+    const newSegments = [];
+
+    for (let i = 0; i < validWaypoints.length - 1; i++) {
+      const from = validWaypoints[i];
+      const to = validWaypoints[i + 1];
+
+      const transport = transportSelections[i];
+
+      if (!transport) {
+        alert(`Please select transport for segment ${i + 1}`);
+        return;
+      }
+
       const res = await fetch("/api/directions/route", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          start,
-          end,
-        }),
+        body: JSON.stringify({ waypoints: [from, to] }),
       });
 
       if (!res.ok) {
-        const error = await res.text();
-        console.error("API error response:", error);
-        throw new Error(error);
+        alert("Failed to fetch route segment");
+        return;
       }
 
       const data = await res.json();
-      setRoute(data);
-      setDistance(data.summary.distance);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to calculate route");
+
+      const distance = data.summary.distance;
+      const geometry = data.geometry;
+
+      const distanceKm = distance / 1000;
+      const carbon = distanceKm * transport.factor;
+
+      newSegments.push({
+        from,
+        to,
+        distance,
+        transportFactor: transport.factor,
+        transportMethod: transport.method,
+        carbon,
+        geometry, // ✅ FIXED
+      });
     }
+
+    setSegments(newSegments);
   };
 
   return (

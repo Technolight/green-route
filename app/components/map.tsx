@@ -2,38 +2,34 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useRoute } from "./RouteCreator";
 
-type Coords = [number, number];
+export default function Map() {
+  const { segments, waypoints } = useRoute();
 
-interface MapProps {
-  route: any | null;
-  start?: Coords | null;
-  end?: Coords | null;
-}
-
-export default function Map({ route, start, end }: MapProps) {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const routeLayerRef = useRef<L.Layer | null>(null);
-  const startMarkerRef = useRef<L.Marker | null>(null);
-  const endMarkerRef = useRef<L.Marker | null>(null);
+  const segmentLayersRef = useRef<L.LayerGroup | null>(null);
+  const markerLayerRef = useRef<L.LayerGroup | null>(null);
 
-  // Custom pin icon
   const pinIcon = L.icon({
     iconUrl: "/map-pin.svg",
-    iconSize: [52, 52],
-    iconAnchor: [16, 32], // bottom center aligns with coordinate
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
   });
 
   // Initialize map
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
 
-    const map = L.map(containerRef.current).setView([51.505, -0.09], 13);
+    const map = L.map(containerRef.current).setView([14.5995, 120.9842], 6);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
     }).addTo(map);
+
+    segmentLayersRef.current = L.layerGroup().addTo(map);
+    markerLayerRef.current = L.layerGroup().addTo(map);
 
     mapRef.current = map;
 
@@ -45,69 +41,48 @@ export default function Map({ route, start, end }: MapProps) {
     };
   }, []);
 
-  // Draw route
+  // Draw segments
   useEffect(() => {
-    if (!mapRef.current || !route) return;
+    if (!mapRef.current || !segmentLayersRef.current) return;
 
-    if (routeLayerRef.current) {
-      routeLayerRef.current.remove();
-      routeLayerRef.current = null;
-    }
+    segmentLayersRef.current.clearLayers();
 
-    let layer: L.Layer | null = null;
+    const allBounds: L.LatLng[] = [];
 
-    if (route.geometry?.type === "LineString") {
-      layer = L.geoJSON(route.geometry, {
-        style: { color: "green", weight: 5 },
-      });
-    } else if (Array.isArray(route.geometry?.coordinates)) {
-      const latLngs = route.geometry.coordinates
-        .filter((c: any) => Array.isArray(c) && c.length === 2)
-        .map((c: [number, number]) => [c[1], c[0]]); // [lat, lon]
+    segments.forEach((segment) => {
+      const { from, to } = segment;
 
-      if (latLngs.length > 1) {
-        layer = L.polyline(latLngs, { color: "green", weight: 5 });
+      if (segment.geometry?.type === "LineString") {
+        const geoLayer = L.geoJSON(segment.geometry, {
+          style: { color: "green", weight: 5 },
+        });
+
+        geoLayer.addTo(segmentLayersRef.current!);
       }
+
+      allBounds.push(L.latLng(from[0], from[1]), L.latLng(to[0], to[1]));
+    });
+
+    if (allBounds.length > 0) {
+      const bounds = L.latLngBounds(allBounds);
+      mapRef.current.fitBounds(bounds, { padding: [40, 40] });
     }
+  }, [segments]);
 
-    if (!layer) {
-      console.error("Invalid route geometry:", route);
-      return;
-    }
-
-    layer.addTo(mapRef.current);
-    routeLayerRef.current = layer;
-
-    const bounds =
-      layer instanceof L.Polyline
-        ? layer.getBounds()
-        : (layer as any).getBounds?.();
-
-    if (bounds && bounds.isValid()) {
-      mapRef.current.fitBounds(bounds, { padding: [30, 30] });
-    }
-  }, [route]);
-
-  // Add start/end markers
+  // Draw waypoint markers
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !markerLayerRef.current) return;
 
-    // Remove previous markers
-    if (startMarkerRef.current) startMarkerRef.current.remove();
-    if (endMarkerRef.current) endMarkerRef.current.remove();
+    markerLayerRef.current.clearLayers();
 
-    // Add new markers
-    if (start) {
-      startMarkerRef.current = L.marker([start[0], start[1]], {
+    waypoints.forEach((w) => {
+      if (!w) return;
+
+      L.marker([w[0], w[1]], {
         icon: pinIcon,
-      }).addTo(mapRef.current);
-    }
-    if (end) {
-      endMarkerRef.current = L.marker([end[0], end[1]], {
-        icon: pinIcon,
-      }).addTo(mapRef.current);
-    }
-  }, [start, end]);
+      }).addTo(markerLayerRef.current!);
+    });
+  }, [waypoints]);
 
   return <div ref={containerRef} className="w-full h-full" />;
 }

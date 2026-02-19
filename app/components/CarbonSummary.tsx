@@ -2,20 +2,29 @@
 import { useRoute } from "./RouteCreator";
 
 export default function CarbonSummary() {
-  const { transportCO2Factor, distance } = useRoute();
+  const { segments } = useRoute();
 
-  if (!transportCO2Factor || !distance) return null;
+  if (!segments.length) return null;
 
-  const distancekm = distance / 1000; // convert to km
-  const totalCO2 = transportCO2Factor * distancekm;
   return (
-    <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4 space-y-4">
-      <div className="divider divide-accent text-lg">Summary</div>
-      <div className="stat">
-        <div className="stat-title">You contributed</div>
-        <div className="stat-value">{totalCO2} kg CO₂</div>
-        <div className="stat-desc">by travelling {distancekm} kilometers</div>
-      </div>
+    <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4 space-y-4 mt-4">
+      <div className="divider text-lg">Carbon Summary</div>
+
+      {segments.map((segment, i) => {
+        const km = (segment.distance / 1000).toFixed(2);
+
+        return (
+          <div key={i} className="stat bg-base-300 rounded-box p-3">
+            <div className="stat-title">Destination {i + 1} produced</div>
+            <div className="stat-value text-secondary">
+              {segment.carbon.toFixed(3)} kg CO₂
+            </div>
+            <div className="stat-desc">
+              Travelled {km} km using a {segment.transportMethod}
+            </div>
+          </div>
+        );
+      })}
     </fieldset>
   );
 }

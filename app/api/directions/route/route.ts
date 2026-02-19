@@ -2,11 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { start, end, profile = "driving-car" } = await req.json();
+    const { waypoints = [], profile = "driving-car" } = await req.json();
 
-    if (!start || !end) {
-      return NextResponse.json({ error: "Missing start/end" }, { status: 400 });
+    if (waypoints.length < 2) {
+      return NextResponse.json(
+        { error: "At least 2 waypoints required" },
+        { status: 400 },
+      );
     }
+
+    const coordinates = waypoints.map(([lat, lon]: [number, number]) => [
+      lon,
+      lat,
+    ]);
 
     const orsRes = await fetch(
       `https://api.openrouteservice.org/v2/directions/${profile}/geojson`,
@@ -17,10 +25,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          coordinates: [
-            [start[1], start[0]],
-            [end[1], end[0]],
-          ],
+          coordinates,
           instructions: false,
         }),
       },

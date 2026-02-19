@@ -13,6 +13,12 @@ type MapWrapperProps = {
 };
 
 export default function MapWrapper() {
-  const { route, start, end } = useRoute();
-  return <Map route={route} start={start} end={end} />;
+  const { route, waypoints } = useRoute();
+  return (
+    <Map
+      route={route}
+      start={waypoints[0]}
+      end={waypoints[waypoints.length - 1]}
+    />
+  );
 }

@@ -8,12 +8,15 @@ type Suggestion = {
   lon: string;
 };
 
-export default function RouteInput({ type }: { type: "start" | "end" }) {
+interface RouteInputProps {
+  index: number;
+}
+
+export default function RouteInput({ index }: RouteInputProps) {
+  const { waypoints, setWaypoints } = useRoute();
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [selected, setSelected] = useState(false);
-
-  const { setStart, setEnd } = useRoute();
 
   useEffect(() => {
     if (!query || selected) {
@@ -22,13 +25,11 @@ export default function RouteInput({ type }: { type: "start" | "end" }) {
     }
 
     const controller = new AbortController();
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+      query,
+    )}&format=json&limit=5`;
 
-    fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-        query,
-      )}&format=json&limit=5`,
-      { signal: controller.signal },
-    )
+    fetch(url, { signal: controller.signal })
       .then((res) => res.json())
       .then(setSuggestions)
       .catch(() => {});
@@ -36,17 +37,29 @@ export default function RouteInput({ type }: { type: "start" | "end" }) {
     return () => controller.abort();
   }, [query, selected]);
 
+  const updateWaypoint = (coords: [number, number], displayName: string) => {
+    const updated = [...waypoints];
+    updated[index] = coords;
+
+    if (index === waypoints.length - 1) {
+      updated.push(null);
+    }
+
+    setWaypoints(updated);
+    setQuery(displayName);
+    setSelected(true);
+  };
+  if (index > 0 && !waypoints[index - 1]) return null;
+
   return (
-    <div className="relative w-full">
+    <div className="relative w-full mb-3">
       <input
         className="input input-secondary w-full"
-        placeholder={type === "start" ? "Starting Point" : "Destination"}
+        placeholder={index === 0 ? "Starting Point" : `Destination ${index}`}
         value={query}
         onChange={(e) => {
           setQuery(e.target.value);
           setSelected(false);
-          if (type === "start") setStart(null);
-          else setEnd(null);
         }}
       />
 
@@ -56,19 +69,12 @@ export default function RouteInput({ type }: { type: "start" | "end" }) {
             <li
               key={i}
               className="p-2 cursor-pointer hover:bg-base-300"
-              onClick={() => {
-                const coords: [number, number] = [
-                  parseFloat(s.lat),
-                  parseFloat(s.lon),
-                ];
-
-                if (type === "start") setStart(coords);
-                else setEnd(coords);
-
-                setQuery(s.display_name);
-                setSuggestions([]);
-                setSelected(true);
-              }}
+              onClick={() =>
+                updateWaypoint(
+                  [parseFloat(s.lat), parseFloat(s.lon)],
+                  s.display_name,
+                )
+              }
             >
               {s.display_name}
             </li>
