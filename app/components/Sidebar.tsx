@@ -4,31 +4,47 @@ import RouteInput from "./RouteInput";
 import TransportSelect from "./TransportSelect";
 import RouteButton from "./RouteButton";
 import CarbonSummary from "./CarbonSummary";
+import { MapPin } from "lucide-react";
 
 export default function Sidebar() {
   const { waypoints } = useRoute();
 
   return (
-    <div className="w-1/4 h-full flex flex-col p-4 overflow-y-auto">
+    <div className="flex flex-col p-4 overflow-y-auto">
       <h1 className="text-3xl text-primary font-bold mb-4">Green Route</h1>
       <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4">
-        <div className="divider divide-accent text-lg">Route</div>
-        {waypoints.map((_, i) => (
-          <div key={i} className="">
-            <RouteInput index={i} />
-            {i < waypoints.length - 1 && (
-              <div className="flex flex-col items-center">
-                <div className="border-l-2 border-neutral border-dashed h-10" />
-              </div>
-            )}
-            <TransportSelect index={i} />
-            {i < waypoints.length - 1 && (
-              <div className="flex flex-col items-center">
-                <div className="border-l-2 border-neutral border-dashed h-10" />
-              </div>
-            )}
-          </div>
-        ))}
+        <div className="divider divider-start text-lg">Route</div>
+        <ul className="timeline timeline-snap-icon timeline-compact timeline-vertical w-full">
+          {waypoints.map((wp, i) => {
+            const isActive = wp !== null;
+
+            return (
+              <li key={i}>
+                {i === 0 ? null : (
+                  <hr className={isActive ? "bg-primary" : "bg-neutral"} />
+                )}
+                <div className="timeline-middle">
+                  <MapPin
+                    className={`h-8 w-8 ${isActive ? "text-primary" : "text-neutral"}`}
+                  />
+                </div>
+                <div className="timeline-end mb-5 w-full">
+                  <RouteInput index={i} />
+                  <TransportSelect index={i} />
+                </div>
+                {i === waypoints.length - 1 ? null : (
+                  <hr
+                    className={
+                      i < waypoints.length - 1 && waypoints[i + 1] !== null
+                        ? "bg-primary"
+                        : "bg-neutral"
+                    }
+                  />
+                )}
+              </li>
+            );
+          })}
+        </ul>
 
         <RouteButton />
       </fieldset>

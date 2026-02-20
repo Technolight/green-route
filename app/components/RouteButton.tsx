@@ -53,7 +53,7 @@ export default function RouteButton() {
         transportFactor: transport.factor,
         transportMethod: transport.method,
         carbon,
-        geometry, // ✅ FIXED
+        geometry,
       });
     }
 

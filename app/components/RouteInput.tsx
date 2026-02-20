@@ -53,13 +53,37 @@ export default function RouteInput({ index }: RouteInputProps) {
 
   return (
     <div className="relative w-full mb-3">
-      <input
-        className="input input-secondary w-full"
-        placeholder={index === 0 ? "Starting Point" : `Destination ${index}`}
+      <textarea
+        className="textarea textarea-ghost w-full text-bold font-medium resize-none leading-tight min-h-0 py-2 overflow-hidden"
+        placeholder={
+          index === 0 ? "Starting Point" : `Add Destination ${index}`
+        }
         value={query}
+        rows={1}
         onChange={(e) => {
-          setQuery(e.target.value);
+          const value = e.target.value;
+          setQuery(value);
           setSelected(false);
+
+          e.target.style.height = "auto";
+          e.target.style.height = `${e.target.scrollHeight}px`;
+
+          if (value.trim() === "") {
+            let updated = [...waypoints];
+            updated[index] = null;
+            updated = updated.slice(0, index + 1);
+            if (updated[updated.length - 1] !== null) {
+              updated.push(null);
+            }
+
+            setWaypoints(updated);
+          }
+        }}
+        ref={(el) => {
+          if (el) {
+            el.style.height = "auto";
+            el.style.height = `${el.scrollHeight}px`;
+          }
         }}
       />
 
