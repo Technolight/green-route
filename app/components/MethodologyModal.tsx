@@ -1,3 +1,5 @@
+import { Users, Info, Factory, CircleAlert } from "lucide-react";
+
 export default function MethodologyModal() {
   return (
     <div className="p-4 flex flex-col items-center">
@@ -11,28 +13,12 @@ export default function MethodologyModal() {
           if (modal) modal.showModal();
         }}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-6 h-6 mr-2"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.835a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-          />
-        </svg>
+        <Info />
         Data Sources & Methodology
       </button>
 
       {/* Modal Structure */}
-      <dialog
-        id="methodology_modal"
-        className="modal modal-bottom sm:modal-middle"
-      >
+      <dialog id="methodology_modal" className="modal modal-middle">
         <div className="modal-box w-11/12 max-w-5xl bg-base-100 p-0">
           {/* Header Section */}
           <div className="bg-primary text-primary-content p-6 sticky top-0 z-10">
@@ -54,23 +40,7 @@ export default function MethodologyModal() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <h5 className="font-bold text-primary flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      className="lucide lucide-users-icon lucide-users"
-                    >
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                      <path d="M16 3.128a4 4 0 0 1 0 7.744" />
-                      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                      <circle cx="9" cy="7" r="4" />
-                    </svg>
+                    <Users />
                     The "Occupancy" Effect
                   </h5>
                   <p className="text-sm text-base-content/80 leading-relaxed">
@@ -84,23 +54,7 @@ export default function MethodologyModal() {
                 </div>
                 <div className="space-y-3">
                   <h5 className="font-bold text-primary flex items-center gap-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      className="lucide lucide-factory-icon lucide-factory"
-                    >
-                      <path d="M12 16h.01" />
-                      <path d="M16 16h.01" />
-                      <path d="M3 19a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5a.5.5 0 0 0-.769-.422l-4.462 2.844A.5.5 0 0 1 15 10.5v-2a.5.5 0 0 0-.769-.422L9.77 10.922A.5.5 0 0 1 9 10.5V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z" />
-                      <path d="M8 16h.01" />
-                    </svg>
+                    <Factory />
                     Fuel & Grid Intensity
                   </h5>
                   <p className="text-sm text-base-content/80 leading-relaxed">
@@ -108,8 +62,8 @@ export default function MethodologyModal() {
                     Petrol). For Electric Vehicles (EVs), we don't assume "zero
                     emissions." Instead, we use the{" "}
                     <strong>Philippines Grid Emission Factor</strong> (approx.
-                    0.691 kg $CO_{2}$/kWh), accounting for the coal and gas used
-                    to generate the electricity that charges the vehicle.
+                    0.691 kg CO₂/kWh), accounting for the coal and gas used to
+                    generate the electricity that charges the vehicle.
                   </p>
                 </div>
               </div>
@@ -125,7 +79,7 @@ export default function MethodologyModal() {
                   <thead className="bg-base-300">
                     <tr>
                       <th>Transport Mode</th>
-                      <th>Vehicle EF (kg $CO_{2}$/km)</th>
+                      <th>Vehicle EF (kg CO₂/km)</th>
                       <th>Default Passengers (Typical Load)</th>
                       <th>Context/Notes</th>
                     </tr>
@@ -265,19 +219,7 @@ export default function MethodologyModal() {
 
             {/* Disclaimer Footer */}
             <div className="alert alert-warning shadow-sm py-3 px-4 rounded-xl flex items-start space-x-2">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="stroke-current shrink-0 h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                />
-              </svg>
+              <CircleAlert />
               <div className="text-xs">
                 <strong>Disclaimer:</strong> These values are based on
                 standardized scientific averages. Your actual footprint may
@@ -286,16 +228,12 @@ export default function MethodologyModal() {
               </div>
             </div>
           </div>
-
-          <div className="modal-action p-4 bg-base-200">
+          <div className="modal-action p-4 sticky bottom-0 bg-base-200">
             <form method="dialog">
               <button className="btn btn-sm btn-ghost">Dismiss</button>
             </form>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
       </dialog>
     </div>
   );

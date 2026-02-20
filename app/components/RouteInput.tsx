@@ -52,9 +52,9 @@ export default function RouteInput({ index }: RouteInputProps) {
   if (index > 0 && !waypoints[index - 1]) return null;
 
   return (
-    <div className="relative w-full mb-3">
+    <div className="relative w-full mb-3 overflow-visible">
       <textarea
-        className="textarea textarea-ghost w-full text-bold font-medium resize-none leading-tight min-h-0 py-2 overflow-hidden"
+        className="textarea textarea-ghost w-full text-bold font-medium resize-none leading-tight min-h-0 overflow-hidden"
         placeholder={
           index === 0 ? "Starting Point" : `Add Destination ${index}`
         }
@@ -88,7 +88,7 @@ export default function RouteInput({ index }: RouteInputProps) {
       />
 
       {suggestions.length > 0 && (
-        <ul className="absolute z-50 w-full bg-base-200 rounded-box mt-1">
+        <ul className="absolute z-1000 w-full bg-base-200 rounded-box mt-1">
           {suggestions.map((s, i) => (
             <li
               key={i}

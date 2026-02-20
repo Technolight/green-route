@@ -1,25 +1,35 @@
+import { Github } from "lucide-react";
 import { RouteProvider } from "./components/RouteCreator";
 import Sidebar from "./components/Sidebar";
 import MapWrapper from "./components/MapWrapper";
 
+export const metadata = {
+  title: "GreenRoute | Calculate Your Footprint",
+  description: "Track and reduce your travel carbon emissions.",
+  icons: {
+    icon: "/leaf.svg",
+  },
+};
 export default function Home() {
   return (
     <RouteProvider>
-      <div className="flex h-screen w-screen">
-        <div className="w-3/4 h-full">
-          <MapWrapper />
-        </div>
-        <div className="w-1/4 flex flex-col h-full">
-          <div className="overflow-y-auto flex-1">
-            <Sidebar />
+      <div className="drawer drawer-end lg:drawer-open h-screen overflow-hidden">
+        <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
+
+        <div className="drawer-content relative h-full w-full">
+          {/* 1. Map Container */}
+          <div className="absolute inset-0 z-0">
+            <MapWrapper />
           </div>
 
-          <footer className="footer sm:footer-horizontal bg-neutral text-neutral-content items-center p-4">
-            <aside className="grid-flow-col items-center">
-              <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
-            </aside>
-            <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
-              <a href="https://github.com/Technolight/green-route">
+          {/* 2. Floating Action Button (FAB) */}
+          {/* We use z-[9999] to ensure it is above map controls */}
+          <div className="absolute bottom-6 right-6 lg:hidden z-9999">
+            <label
+              htmlFor="my-drawer-3"
+              className="btn btn-circle btn-primary h-20 w-20 shadow-lg flex items-center justify-center cursor-pointer pointer-events-auto"
+            >
+              <span className="text-xl">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -30,14 +40,45 @@ export default function Home() {
                   stroke-width="2"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  className="lucide lucide-github-icon lucide-github"
+                  className="lucide lucide-leaf-icon lucide-leaf"
                 >
-                  <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                  <path d="M9 18c-4.51 2-5-2-7-2" />
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
                 </svg>
-              </a>
-            </nav>
-          </footer>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        {/* 3. Sidebar */}
+        <div className="drawer-side z-10000">
+          <label
+            htmlFor="my-drawer-3"
+            aria-label="close sidebar"
+            className="drawer-overlay"
+          ></label>
+
+          {/* Sidebar container: flex column to place footer at bottom */}
+          <div className="flex flex-col min-h-full w-3/4 md:w-lg max-w-lg bg-base-200">
+            {/* Sidebar content */}
+            <div className="flex-1 overflow-auto">
+              <Sidebar />
+            </div>
+
+            {/* Footer always at bottom */}
+            <footer className="footer sm:footer-horizontal bg-neutral text-neutral-content items-center p-4">
+              <aside className="grid-flow-col items-center">
+                <p>
+                  Copyright © {new Date().getFullYear()} - All rights reserved
+                </p>
+              </aside>
+              <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
+                <a href="https://github.com/Technolight/green-route">
+                  <Github />
+                </a>
+              </nav>
+            </footer>
+          </div>
         </div>
       </div>
     </RouteProvider>

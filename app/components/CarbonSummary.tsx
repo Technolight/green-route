@@ -32,7 +32,6 @@ export default function CarbonSummary() {
             {totals.totalDistance.toFixed(2)} km
           </div>
         </div>
-
         <div className="stat">
           <div className="stat-title">Carbon Footprint</div>
           <div className="stat-value text-2xl text-secondary">
